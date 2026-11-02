@@ -4,11 +4,22 @@ import api, { setUnauthorizedHandler } from './api';
 import * as authMock from './mock/authMock';
 import { DEMO_CREDENTIALS } from './mock/db';
 
-// Endpoints provisórios: confirmar com o back-end quando o contrato da API sair.
+// Adapta o contrato da API ao formato usado pelas telas existentes.
+const toScreenUser = (user) => user ? ({
+  ...user,
+  id_usuario: user.id,
+  nome: user.name,
+  tipo_usuario: user.role === 'doctor' ? 'medico' : 'paciente',
+}) : null;
+
 const authApi = {
   async login(email, senha) {
-    const { data } = await api.post('/auth/login', { email, senha });
-    return data.usuario;
+    const { data } = await api.post('/auth/login', { email, password: senha });
+    return toScreenUser(data.user);
+  },
+  async register(name, email, password, role) {
+    const { data } = await api.post('/auth/register', { name, email, password, role });
+    return toScreenUser(data.user);
   },
   async logout() {
     await api.post('/auth/logout');
@@ -16,7 +27,7 @@ const authApi = {
   async getCurrentUser() {
     try {
       const { data } = await api.get('/auth/me');
-      return data.usuario;
+      return toScreenUser(data.user);
     } catch (error) {
       if (error.status === 401) return null;
       throw error;
@@ -36,3 +47,6 @@ export const onUnauthorized = (handler) => impl.onUnauthorized(handler);
 // TEMPORÁRIO – substituído no Prompt 02. Atalhos de login demo; com a API real,
 // só funcionam se o back-end tiver esses usuários de seed.
 export const demoCredentials = DEMO_CREDENTIALS;
+
+export const useMockAuth = useMock;
+export const register = (name, email, password, role) => authApi.register(name, email, password, role);

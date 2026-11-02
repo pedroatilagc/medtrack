@@ -4,14 +4,17 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Alert, Button, Form, Spinner } from 'react-bootstrap';
 import { Stethoscope, UserRound } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { demoCredentials } from '../../services/authService';
+import { demoCredentials, useMockAuth } from '../../services/authService';
 import { homeFor } from '../../routes/paths';
 import LoadingState from '../../components/ui/LoadingState';
 
 export default function Login() {
-  const { login, isAuthenticated, loading, user } = useAuth();
+  const { login, register, isAuthenticated, loading, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [creating, setCreating] = useState(false);
+  const [name, setName] = useState('');
+  const [profile, setProfile] = useState('patient');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
@@ -28,7 +31,9 @@ export default function Login() {
     setError('');
     setSubmitting(true);
     try {
-      const loggedUser = await login(credentials.email, credentials.senha);
+      const loggedUser = creating
+        ? await register(name, credentials.email, credentials.senha, profile)
+        : await login(credentials.email, credentials.senha);
       const home = homeFor(loggedUser);
       // Volta para a página que pediu login, desde que pertença ao perfil de quem entrou
       const from = location.state?.from;
@@ -45,6 +50,10 @@ export default function Login() {
       setError('Informe o e-mail e a senha para entrar.');
       return;
     }
+    if (creating && (!name.trim() || senha.length < 8)) {
+      setError('Informe seu nome e uma senha com pelo menos 8 caracteres.');
+      return;
+    }
     signIn({ email, senha });
   }
 
@@ -53,7 +62,7 @@ export default function Login() {
   return (
     <div className="login-grid">
       <section aria-labelledby="login-title">
-        <h1 id="login-title">Entrar</h1>
+        <h1 id="login-title">{creating ? 'Criar conta' : 'Entrar'}</h1>
         <p className="text-body-secondary mb-5">Use o e-mail e a senha da sua conta.</p>
 
         {error && (
@@ -63,6 +72,19 @@ export default function Login() {
         )}
 
         <Form onSubmit={handleSubmit} noValidate>
+          {creating && <>
+            <Form.Group className="mb-4" controlId="register-name">
+              <Form.Label>Nome</Form.Label>
+              <Form.Control autoComplete="name" value={name} onChange={e => setName(e.target.value)} />
+            </Form.Group>
+            <Form.Group className="mb-4" controlId="register-role">
+              <Form.Label>Perfil</Form.Label>
+              <Form.Select value={profile} onChange={e => setProfile(e.target.value)}>
+                <option value="patient">Paciente</option>
+                <option value="doctor">Médico</option>
+              </Form.Select>
+            </Form.Group>
+          </>}
           <Form.Group className="mb-4" controlId="login-email">
             <Form.Label>E-mail</Form.Label>
             <Form.Control
@@ -85,11 +107,14 @@ export default function Login() {
           </Form.Group>
           <Button type="submit" variant="primary" disabled={submitting} className="w-100">
             {submitting && <Spinner size="sm" aria-hidden="true" />}
-            {submitting ? 'Entrando…' : 'Entrar'}
+            {submitting ? 'Aguarde…' : creating ? 'Criar conta' : 'Entrar'}
           </Button>
         </Form>
 
-        <div className="demo-access">
+        {!useMockAuth && <Button variant="link" disabled={submitting} onClick={() => { setCreating(!creating); setError(''); }}>
+          {creating ? 'Já tenho conta' : 'Criar uma conta'}
+        </Button>}
+        {useMockAuth && <div className="demo-access">
           <h2 className="h4 mb-1">Acesso de demonstração</h2>
           <p className="text-body-secondary small mb-3">
             Entre com uma conta fictícia para conhecer cada perfil.
@@ -112,7 +137,7 @@ export default function Login() {
               Entrar como médico demo
             </Button>
           </div>
-        </div>
+        </div>}
       </section>
 
       <aside className="login-aside" aria-labelledby="about-title">

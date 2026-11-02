@@ -38,11 +38,11 @@ export default function DoctorHome() {
             </div>
             <div>
               <dt>Especialidade</dt>
-              <dd>{user.especialidade}</dd>
+              <dd>{user.especialidade || 'Não informada'}</dd>
             </div>
             <div>
               <dt>CRM</dt>
-              <dd className="font-mono">{user.crm}</dd>
+              <dd className="font-mono">{user.crm || 'Não informado'}</dd>
             </div>
             <div>
               <dt>E-mail</dt>

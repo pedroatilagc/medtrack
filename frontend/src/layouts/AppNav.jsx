@@ -49,7 +49,7 @@ export function UserBlock() {
         <div className="user-block__meta">
           {user.tipo_usuario === 'medico' ? (
             <>
-              {user.especialidade} · <span className="font-mono">{user.crm}</span>
+              {user.especialidade || 'Médico'}{user.crm && <> · <span className="font-mono">{user.crm}</span></>}
             </>
           ) : (
             'Paciente'
