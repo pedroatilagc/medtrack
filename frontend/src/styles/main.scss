@@ -1,14 +1,14 @@
-@use "sass:list";
-@use "sass:map";
+@use 'sass:list';
+@use 'sass:map';
 
 // Ordem importa: tokens → overrides → Bootstrap (que respeita os !default já definidos) → estilos próprios.
-@import "tokens";
-@import "bootstrap-overrides";
-@import "bootstrap/scss/bootstrap";
+@import 'tokens';
+@import 'bootstrap-overrides';
+@import 'bootstrap/scss/bootstrap';
 
 // ---------- Base ----------
 body {
-  font-feature-settings: "tnum" 1; // algarismos de largura fixa: datas e doses alinham em listas
+  font-feature-settings: 'tnum' 1; // algarismos de largura fixa: datas e doses alinham em listas
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -152,7 +152,9 @@ p {
     color: $color-text-secondary;
     font-weight: $weight-medium;
     text-decoration: none;
-    transition: background-color $duration-fast $ease-out, color $duration-fast $ease-out;
+    transition:
+      background-color $duration-fast $ease-out,
+      color $duration-fast $ease-out;
 
     &:hover {
       background: $color-bg;
@@ -353,9 +355,18 @@ p {
 }
 
 $status-semantic: (
-  "agendada": ("info", $color-info),
-  "realizada": ("success", $color-success),
-  "cancelada": ("danger", $color-danger),
+  'agendada': (
+    'info',
+    $color-info,
+  ),
+  'realizada': (
+    'success',
+    $color-success,
+  ),
+  'cancelada': (
+    'danger',
+    $color-danger,
+  ),
 );
 
 @each $status, $pair in $status-semantic {
@@ -474,6 +485,8 @@ $status-semantic: (
   padding-top: $space-5;
   border-top: 1px solid $color-border;
 }
+
+@import 'home';
 
 // ---------- Movimento reduzido ----------
 @media (prefers-reduced-motion: reduce) {

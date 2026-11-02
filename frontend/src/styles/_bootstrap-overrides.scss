@@ -1,4 +1,4 @@
-@use "sass:color";
+@use 'sass:color';
 
 // Traduz os tokens para as variáveis do Bootstrap. Precisa vir ANTES do import do Bootstrap,
 // porque ele declara tudo com !default: só usa o valor dele se o nosso ainda não existir.
@@ -99,7 +99,9 @@ $input-btn-focus-color: rgba($color-primary, 0.35);
 $btn-font-weight: $weight-semibold;
 $btn-padding-y: $space-2;
 $btn-padding-x: $space-4;
-$btn-transition: color $duration-fast $ease-out, background-color $duration-fast $ease-out,
+$btn-transition:
+  color $duration-fast $ease-out,
+  background-color $duration-fast $ease-out,
   border-color $duration-fast $ease-out;
 $input-bg: $color-surface;
 $input-border-color: $color-border-strong;

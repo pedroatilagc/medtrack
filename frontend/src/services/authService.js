@@ -5,20 +5,29 @@ import * as authMock from './mock/authMock';
 import { DEMO_CREDENTIALS } from './mock/db';
 
 // Adapta o contrato da API ao formato usado pelas telas existentes.
-const toScreenUser = (user) => user ? ({
-  ...user,
-  id_usuario: user.id,
-  nome: user.name,
-  tipo_usuario: user.role === 'doctor' ? 'medico' : 'paciente',
-}) : null;
+const toScreenUser = (user) =>
+  user
+    ? {
+        ...user,
+        id_usuario: user.id,
+        nome: user.name,
+        data_nascimento: user.birthDate,
+        especialidade: user.specialty,
+        tipo_usuario: { doctor: 'medico', patient: 'paciente', admin: 'admin' }[user.role],
+      }
+    : null;
 
 const authApi = {
   async login(email, senha) {
     const { data } = await api.post('/auth/login', { email, password: senha });
     return toScreenUser(data.user);
   },
-  async register(name, email, password, role) {
-    const { data } = await api.post('/auth/register', { name, email, password, role });
+  async register(name, email, password, role, details = {}) {
+    const { data } = await api.post('/auth/register', { name, email, password, role, ...details });
+    return toScreenUser(data.user);
+  },
+  async updateProfile(profile) {
+    const { data } = await api.patch('/profile', profile);
     return toScreenUser(data.user);
   },
   async logout() {
@@ -49,4 +58,6 @@ export const onUnauthorized = (handler) => impl.onUnauthorized(handler);
 export const demoCredentials = DEMO_CREDENTIALS;
 
 export const useMockAuth = useMock;
-export const register = (name, email, password, role) => authApi.register(name, email, password, role);
+export const register = (name, email, password, role, details) =>
+  authApi.register(name, email, password, role, details);
+export const updateProfile = (profile) => impl.updateProfile(profile);

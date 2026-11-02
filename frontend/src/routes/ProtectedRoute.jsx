@@ -17,7 +17,7 @@ export default function ProtectedRoute({ allowedRoles }) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.tipo_usuario)) {
+  if (allowedRoles && user.tipo_usuario !== 'admin' && !allowedRoles.includes(user.tipo_usuario)) {
     return <Navigate to={homeFor(user)} replace />;
   }
 

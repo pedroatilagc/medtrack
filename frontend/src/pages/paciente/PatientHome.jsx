@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import PageHeader from '../../components/ui/PageHeader';
+import { formatBirthDate, genderLabel } from '../../services/profile';
 import ConsultationFlow from '../../components/ConsultationFlow';
-
-// "1987-04-12" → "12/04/1987" sem passar por Date, que pode deslocar um dia por causa do fuso
-const formatDate = (iso) => iso?.split('-').reverse().join('/');
 
 export default function PatientHome() {
   const { user } = useAuth();
@@ -45,9 +43,16 @@ export default function PatientHome() {
             </div>
             <div>
               <dt>Data de nascimento</dt>
-              <dd className="font-mono">{formatDate(user.data_nascimento) ?? 'Não informada'}</dd>
+              <dd className="font-mono">{formatBirthDate(user.data_nascimento)}</dd>
+            </div>
+            <div>
+              <dt>Gênero</dt>
+              <dd>{genderLabel(user)}</dd>
             </div>
           </dl>
+          <Link className="btn btn-outline-primary mt-3" to="/paciente/cadastro">
+            Editar cadastro
+          </Link>
         </section>
       </div>
     </>

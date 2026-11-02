@@ -5,7 +5,10 @@ import EmptyState from '../../components/ui/EmptyState';
 export default function PatientAppointments() {
   return (
     <>
-      <PageHeader title="Minhas consultas" description="Consultas agendadas, preparadas e já realizadas." />
+      <PageHeader
+        title="Minhas consultas"
+        description="Consultas agendadas, preparadas e já realizadas."
+      />
       <EmptyState
         icon={CalendarPlus}
         title="Nenhuma consulta ainda"

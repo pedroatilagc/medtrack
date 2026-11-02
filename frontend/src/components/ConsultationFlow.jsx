@@ -29,7 +29,8 @@ export default function ConsultationFlow() {
         ))}
       </ol>
       <p className="mt-5 mb-0 text-body-secondary">
-        Se uma consulta for desmarcada, ela continua na lista com o status <StatusBadge status="cancelada" />
+        Se uma consulta for desmarcada, ela continua na lista com o status{' '}
+        <StatusBadge status="cancelada" />
       </p>
     </>
   );

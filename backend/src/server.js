@@ -16,9 +16,9 @@ let stage = 'conexão';
 try {
   console.log('[API] Verificando conexão real com MongoDB...');
   await mongoose.connect(URI, { serverSelectionTimeoutMS: 6000, connectTimeoutMS: 5000 });
-  await mongoose.connection.db.admin().command({ping:1});
+  await mongoose.connection.db.admin().command({ ping: 1 });
   stage = 'criação de índices';
-  const {Appointment, User, Session} = await import('./models.js');
+  const { Appointment, User, Session } = await import('./models.js');
   await Promise.all([Appointment.init(), User.init(), Session.init()]);
   stage = 'escuta HTTP';
   const server = app.listen(PORT, HOST, () => {
@@ -39,7 +39,9 @@ try {
 } catch (error) {
   console.error(`[API] Falha durante ${stage}: ${error.message}`);
   if (/ECONNREFUSED/.test(error.message) && URI.startsWith('mongodb://127.0.0.1')) {
-    console.error('[API] O MongoDB LOCAL está desligado/inacessível. Verifique Get-Service MongoDB e Start-Service MongoDB.');
+    console.error(
+      '[API] O MongoDB LOCAL está desligado/inacessível. Verifique Get-Service MongoDB e Start-Service MongoDB.',
+    );
   } else if (/querySrv/.test(error.message)) {
     console.error('[API] O .env ainda pode estar apontando para um cluster Atlas (DNS SRV).');
   }

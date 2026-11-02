@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import PageHeader from '../../components/ui/PageHeader';
+import { formatBirthDate, genderLabel, formatCrm } from '../../services/profile';
 import ConsultationFlow from '../../components/ConsultationFlow';
 
 export default function DoctorHome() {
@@ -42,13 +43,24 @@ export default function DoctorHome() {
             </div>
             <div>
               <dt>CRM</dt>
-              <dd className="font-mono">{user.crm || 'Não informado'}</dd>
+              <dd className="font-mono">{formatCrm(user)}</dd>
             </div>
             <div>
               <dt>E-mail</dt>
               <dd>{user.email}</dd>
             </div>
+            <div>
+              <dt>Data de nascimento</dt>
+              <dd>{formatBirthDate(user.data_nascimento)}</dd>
+            </div>
+            <div>
+              <dt>Gênero</dt>
+              <dd>{genderLabel(user)}</dd>
+            </div>
           </dl>
+          <Link className="btn btn-outline-primary mt-3" to="/medico/cadastro">
+            Editar cadastro
+          </Link>
         </section>
       </div>
     </>

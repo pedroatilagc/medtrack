@@ -5,7 +5,10 @@ import EmptyState from '../../components/ui/EmptyState';
 export default function DoctorSchedule() {
   return (
     <>
-      <PageHeader title="Agenda" description="Suas consultas, com o resumo de preparação de cada paciente." />
+      <PageHeader
+        title="Agenda"
+        description="Suas consultas, com o resumo de preparação de cada paciente."
+      />
       <EmptyState
         icon={CalendarDays}
         title="Nenhuma consulta na agenda"

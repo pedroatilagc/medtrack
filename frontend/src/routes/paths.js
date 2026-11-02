@@ -1,4 +1,5 @@
 export const ROLE_HOME = {
+  admin: '/admin',
   paciente: '/paciente',
   medico: '/medico',
 };
