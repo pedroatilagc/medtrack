@@ -25,10 +25,12 @@ import {
 } from './helpers.js';
 
 import { profileFields } from './profile.js';
+import { connectDatabase } from './database.js';
 import { hasRole, ownsRecord } from './permissions.js';
 
 const app = express();
 app.disable('x-powered-by');
+if (process.env.VERCEL) app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '100kb' }));
 app.use(cookieParser());
@@ -65,6 +67,13 @@ async function createSession(user, res, remember = true) {
 app.use(
   '/api',
   wrap(async (req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    try {
+      await connectDatabase();
+    } catch (error) {
+      console.error('[API] Falha na conexão com MongoDB:', error.name);
+      fail(503, 'Banco de dados indisponível. Tente novamente em instantes.');
+    }
     // Bloqueia mudanças cross-site feitas por navegadores com cookie de sessão.
     if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method) && req.headers.origin) {
       const expected = `${req.protocol}://${req.get('host')}`;
@@ -72,6 +81,8 @@ app.use(
       const devOrigin = 'http://127.0.0.1:5173';
       const allowed = [
         expected,
+        ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+        ...(process.env.APP_ORIGIN ? [process.env.APP_ORIGIN.replace(/\/$/, '')] : []),
         ...(process.env.NODE_ENV === 'production' ? [] : [devOrigin, 'http://localhost:5173']),
       ];
       if (!allowed.includes(req.headers.origin)) fail(403, 'Origem não autorizada.');

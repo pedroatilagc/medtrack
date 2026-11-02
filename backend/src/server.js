@@ -1,10 +1,7 @@
-import dotenv from 'dotenv';
-import { fileURLToPath } from 'node:url';
 import mongoose from 'mongoose';
 import app from './app.js';
+import { connectDatabase } from './database.js';
 
-// Localiza o .env ao lado do package.json do backend, independentemente do diretório de execução.
-dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), override: true });
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || '127.0.0.1';
 const URI = process.env.MONGODB_URI;
@@ -15,11 +12,7 @@ if (!URI) {
 let stage = 'conexão';
 try {
   console.log('[API] Verificando conexão real com MongoDB...');
-  await mongoose.connect(URI, { serverSelectionTimeoutMS: 6000, connectTimeoutMS: 5000 });
-  await mongoose.connection.db.admin().command({ ping: 1 });
-  stage = 'criação de índices';
-  const { Appointment, User, Session } = await import('./models.js');
-  await Promise.all([Appointment.init(), User.init(), Session.init()]);
+  await connectDatabase();
   stage = 'escuta HTTP';
   const server = app.listen(PORT, HOST, () => {
     console.log('[API] MongoDB conectado e respondendo.');
@@ -45,6 +38,5 @@ try {
   } else if (/querySrv/.test(error.message)) {
     console.error('[API] O .env ainda pode estar apontando para um cluster Atlas (DNS SRV).');
   }
-  console.error('[API] Diagnóstico: npm run diagnostico:local');
   process.exit(1);
 }
